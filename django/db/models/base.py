@@ -815,12 +815,15 @@ class Model(object):
             # there's a ticket to add a date lookup, we can remove this special
             # case if that makes it's way in
             date = getattr(self, unique_for)
-            if lookup_type == 'date':
-                lookup_kwargs['%s__day' % unique_for] = date.day
-                lookup_kwargs['%s__month' % unique_for] = date.month
-                lookup_kwargs['%s__year' % unique_for] = date.year
+            if date is None:
+                lookup_kwargs[unique_for] = None
             else:
-                lookup_kwargs['%s__%s' % (unique_for, lookup_type)] = getattr(date, lookup_type)
+                if lookup_type == 'date':
+                    lookup_kwargs['%s__day' % unique_for] = date.day
+                    lookup_kwargs['%s__month' % unique_for] = date.month
+                    lookup_kwargs['%s__year' % unique_for] = date.year
+                else:
+                    lookup_kwargs['%s__%s' % (unique_for, lookup_type)] = getattr(date, lookup_type)
             lookup_kwargs[field] = getattr(self, field)
 
             qs = model_class._default_manager.filter(**lookup_kwargs)
