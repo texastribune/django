@@ -380,6 +380,20 @@ Only supported for the ``mysql`` backend (see the `MySQL manual`_ for details).
 
 .. _MySQL manual: MySQL_
 
+.. setting:: TEST_DEPENDENCIES
+
+TEST_DEPENDENCIES
+~~~~~~~~~~~~~~~~~
+
+.. versionadded:: 1.2.4
+
+Default: ``['default']``, for all databases other than ``default``,
+which has no dependencies.
+
+The creation-order dependencies of the database. See the documentation
+on :ref:`controlling the creation order of test databases
+<topics-testing-creation-dependencies>` for details.
+
 .. setting:: TEST_MIRROR
 
 TEST_MIRROR
@@ -594,7 +608,7 @@ isn't manually specified. Used with ``DEFAULT_CHARSET`` to construct the
 DEFAULT_FILE_STORAGE
 --------------------
 
-Default: ``'django.core.files.storage.FileSystemStorage'``
+Default: :class:`django.core.files.storage.FileSystemStorage`
 
 Default file storage class to be used for any file-related operations that don't
 specify a particular storage system. See :doc:`/topics/files`.

@@ -1,6 +1,7 @@
 from django.conf import settings
 from django.contrib.auth.models import User, Group, Permission, AnonymousUser
 from django.contrib.contenttypes.models import ContentType
+from django.core.exceptions import ImproperlyConfigured
 from django.test import TestCase
 
 
@@ -12,6 +13,7 @@ class BackendTest(TestCase):
         self.curr_auth = settings.AUTHENTICATION_BACKENDS
         settings.AUTHENTICATION_BACKENDS = (self.backend,)
         User.objects.create_user('test', 'test@example.com', 'test')
+        User.objects.create_superuser('test2', 'test2@example.com', 'test')
 
     def tearDown(self):
         settings.AUTHENTICATION_BACKENDS = self.curr_auth
@@ -87,6 +89,10 @@ class BackendTest(TestCase):
         self.assertEqual(user.has_perm('auth.test'), True)
         self.assertEqual(user.get_all_permissions(), set(['auth.test']))
 
+    def test_get_all_superuser_permissions(self):
+        "A superuser has all permissions. Refs #14795"
+        user = User.objects.get(username='test2')
+        self.assertEqual(len(user.get_all_permissions()), len(Permission.objects.all()))
 
 class TestObj(object):
     pass
@@ -245,3 +251,18 @@ class NoAnonymousUserBackendTest(TestCase):
 
     def test_get_all_permissions(self):
         self.assertEqual(self.user1.get_all_permissions(TestObj()), set())
+
+class NoBackendsTest(TestCase):
+    """
+    Tests that an appropriate error is raised if no auth backends are provided.
+    """
+    def setUp(self):
+        self.old_AUTHENTICATION_BACKENDS = settings.AUTHENTICATION_BACKENDS
+        settings.AUTHENTICATION_BACKENDS = []
+        self.user = User.objects.create_user('test', 'test@example.com', 'test')
+
+    def tearDown(self):
+        settings.AUTHENTICATION_BACKENDS = self.old_AUTHENTICATION_BACKENDS
+
+    def test_raises_exception(self):
+        self.assertRaises(ImproperlyConfigured, self.user.has_perm, ('perm', TestObj(),))

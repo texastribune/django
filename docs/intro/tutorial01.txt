@@ -39,11 +39,12 @@ From the command line, ``cd`` into a directory where you'd like to store your
 code, then run the command ``django-admin.py startproject mysite``. This will
 create a ``mysite`` directory in your current directory.
 
-.. admonition:: Script name differs on Ubuntu
+.. admonition:: Script name may differ in distribution packages
 
-   If you installed Django using the Ubuntu package manager (e.g. apt-get)
-   ``django-admin.py`` has been renamed to ``django-admin``. You may continue
-   through this documentation by omitting ``.py`` from each command.
+   If you installed Django using a Linux distribution's package manager
+   (e.g. apt-get or yum) ``django-admin.py`` may have been renamed to
+   ``django-admin``. You may continue through this documentation by omitting
+   ``.py`` from each command.
 
 .. admonition:: Mac OS X permissions
 
@@ -223,6 +224,8 @@ come with Django:
 
     * :mod:`django.contrib.sites` -- A framework for managing multiple sites
       with one Django installation.
+
+    * :mod:`django.contrib.messages` -- A messaging framework.
 
 These applications are included by default as a convenience for the common case.
 

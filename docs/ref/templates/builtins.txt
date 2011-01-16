@@ -1009,9 +1009,8 @@ output will be ``[1, 2, 3, 4, 5, 6]``.
 
 .. warning::
 
-    Keep in mind that strings that can both be coerced to integers will be,
-    and thus will be will be *summed*, not concatenated, as in the first
-    example above.
+    Strings that can be coerced to integers will be **summed**, not
+    concatenated, as in the first example above.
 
 .. templatefilter:: addslashes
 
@@ -1671,6 +1670,11 @@ For example::
 
 If ``value`` is ``"<b>Joel</b> <button>is</button> a <span>slug</span>"`` the
 output will be ``"Joel <button>is</button> a slug"``.
+
+Note that this filter is case-sensitive.
+
+If ``value`` is ``"<B>Joel</B> <button>is</button> a <span>slug</span>"`` the
+output will be ``"<B>Joel</B> <button>is</button> a slug"``.
 
 .. templatefilter:: rjust
 

@@ -11,4 +11,33 @@ from util import *
 from validators import TestFieldWithValidators
 from widgets import *
 
-from regressiontests.forms.localflavortests import __test__
+from regressiontests.forms.localflavortests import (
+    __test__,
+    ARLocalFlavorTests,
+    ATLocalFlavorTests,
+    AULocalFlavorTests,
+    BRLocalFlavorTests,
+    CALocalFlavorTests,
+    CHLocalFlavorTests,
+    CLLocalFlavorTests,
+    DELocalFlavorTests,
+    ESLocalFlavorTests,
+    FILocalFlavorTests,
+    FRLocalFlavorTests,
+    GenericLocalFlavorTests,
+    IDLocalFlavorTests,
+    IELocalFlavorTests,
+    ISLocalFlavorTests,
+    ITLocalFlavorTests,
+    JPLocalFlavorTests,
+    KWLocalFlavorTests,
+    NLLocalFlavorTests,
+    PLLocalFlavorTests,
+    PTLocalFlavorTests,
+    ROLocalFlavorTests,
+    SKLocalFlavorTests,
+    UKLocalFlavorTests,
+    USLocalFlavorTests,
+    UYLocalFlavorTests,
+    ZALocalFlavorTests,
+)
