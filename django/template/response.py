@@ -6,6 +6,9 @@ class ContentNotRenderedError(Exception):
 
 class SimpleTemplateResponse(HttpResponse):
 
+    RENDERING_ATTRS = ['template_name', 'context_data',
+        '_post_render_callbacks']
+
     def __init__(self, template, context=None, mimetype=None, status=None,
             content_type=None):
         # It would seem obvious to call these next two members 'template' and
@@ -37,9 +40,9 @@ class SimpleTemplateResponse(HttpResponse):
         obj_dict = self.__dict__.copy()
         if not self._is_rendered:
             raise ContentNotRenderedError('The response content must be rendered before it can be pickled.')
-        del obj_dict['template_name']
-        del obj_dict['context_data']
-        del obj_dict['_post_render_callbacks']
+        for attr in self.RENDERING_ATTRS:
+            if attr in obj_dict:
+                del obj_dict[attr]
 
         return obj_dict
 
@@ -122,6 +125,10 @@ class SimpleTemplateResponse(HttpResponse):
 
 
 class TemplateResponse(SimpleTemplateResponse):
+
+    RENDERING_ATTRS = SimpleTemplateResponse.RENDERING_ATTRS + \
+        ['_request', '_current_app']
+
     def __init__(self, request, template, context=None, mimetype=None,
             status=None, content_type=None, current_app=None):
         # self.request gets over-written by django.test.client.Client - and
@@ -133,20 +140,6 @@ class TemplateResponse(SimpleTemplateResponse):
         self._current_app = current_app
         super(TemplateResponse, self).__init__(
             template, context, mimetype, status, content_type)
-
-    def __getstate__(self):
-        """Pickling support function.
-
-        Ensures that the object can't be pickled before it has been
-        rendered, and that the pickled state only includes rendered
-        data, not the data used to construct the response.
-        """
-        obj_dict = super(TemplateResponse, self).__getstate__()
-
-        del obj_dict['_request']
-        del obj_dict['_current_app']
-
-        return obj_dict
 
     def resolve_context(self, context):
         """Convert context data into a full RequestContext object
