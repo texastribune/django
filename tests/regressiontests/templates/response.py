@@ -8,7 +8,8 @@ from django.conf import settings
 import django.template.context
 from django.template import Template, Context, RequestContext
 from django.template.response import (TemplateResponse, SimpleTemplateResponse,
-                                      ContentNotRenderedError)
+                                      ContentNotRenderedError,
+                                      DiscardedAttributeError)
 
 def test_processor(request):
     return {'processors': 'yes'}
@@ -190,9 +191,14 @@ class SimpleTemplateResponseTest(BaseTemplateResponseTest):
 
         # ...and the unpickled reponse doesn't have the
         # template-related attributes, so it can't be re-rendered
-        self.assertFalse(hasattr(unpickled_response, 'template_name'))
-        self.assertFalse(hasattr(unpickled_response, 'context_data'))
-        self.assertFalse(hasattr(unpickled_response, '_post_render_callbacks'))
+        template_attrs = ('template_name', 'context_data', '_post_render_callbacks')
+        for attr in template_attrs:
+            self.assertFalse(hasattr(unpickled_response, attr))
+
+        # ...and requesting any of those attributes raises an exception
+        for attr in template_attrs:
+            with self.assertRaises(DiscardedAttributeError) as cm:
+                getattr(unpickled_response, attr)
 
 class TemplateResponseTest(BaseTemplateResponseTest):
 
@@ -255,10 +261,15 @@ class TemplateResponseTest(BaseTemplateResponseTest):
 
         # ...and the unpickled reponse doesn't have the
         # template-related attributes, so it can't be re-rendered
-        self.assertFalse(hasattr(unpickled_response, '_request'))
-        self.assertFalse(hasattr(unpickled_response, 'template_name'))
-        self.assertFalse(hasattr(unpickled_response, 'context_data'))
-        self.assertFalse(hasattr(unpickled_response, '_post_render_callbacks'))
+        template_attrs = ('template_name', 'context_data',
+            '_post_render_callbacks', '_request', '_current_app')
+        for attr in template_attrs:
+            self.assertFalse(hasattr(unpickled_response, attr))
+
+        # ...and requesting any of those attributes raises an exception
+        for attr in template_attrs:
+            with self.assertRaises(DiscardedAttributeError) as cm:
+                getattr(unpickled_response, attr)
 
 
 class CustomURLConfTest(TestCase):
