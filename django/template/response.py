@@ -4,6 +4,9 @@ from django.template import loader, Context, RequestContext
 class ContentNotRenderedError(Exception):
     pass
 
+class DiscardedAttributeError(AttributeError):
+    pass
+
 class SimpleTemplateResponse(HttpResponse):
 
     RENDERING_ATTRS = ['template_name', 'context_data',
@@ -45,6 +48,11 @@ class SimpleTemplateResponse(HttpResponse):
                 del obj_dict[attr]
 
         return obj_dict
+
+    def __getattr__(self, name):
+        if name in self.RENDERING_ATTRS:
+            raise DiscardedAttributeError('The %s attribute was discarded when this TemplateResponse was pickled.' % name)
+        return super(SimpleTemplateResponse, self).__getattr__(name)
 
     def resolve_template(self, template):
         "Accepts a template object, path-to-template or list of paths"
