@@ -131,7 +131,6 @@ class SimpleTemplateResponse(HttpResponse):
 
     content = property(_get_content, _set_content)
 
-
 class TemplateResponse(SimpleTemplateResponse):
 
     RENDERING_ATTRS = SimpleTemplateResponse.RENDERING_ATTRS + \
